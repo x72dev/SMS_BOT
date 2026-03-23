@@ -20,16 +20,21 @@ def auth(func):
             elif update.callback_query:
                 await update.callback_query.answer("⛔ 无权限", show_alert=True)
             return
-        # 授权检查（/activate 不拦截）
+        # 授权检查（/activate 和 cb_license 不拦截）
         state: AppState = ctx.bot_data["state"]
         if state.license_blocked:
             license_mgr = ctx.bot_data.get("license_mgr")
             admin = license_mgr.admin_mention if license_mgr else "管理员"
             if update.message:
+                from telegram import InlineKeyboardButton, InlineKeyboardMarkup
                 await update.message.reply_text(
-                    f"🔒 软件未激活\n\n👉 联系 {admin}\n\n发送 /activate 重新验证授权")
+                    f"🔒 软件未激活\n\n👉 联系 {admin} 获取授权",
+                    reply_markup=InlineKeyboardMarkup([
+                        [InlineKeyboardButton("🔑 授权管理", callback_data="cb_license")],
+                    ]),
+                )
             elif update.callback_query:
-                await update.callback_query.answer("🔒 软件未激活", show_alert=True)
+                await update.callback_query.answer("🔒 软件未激活，请先激活授权", show_alert=True)
             return
         return await func(update, ctx)
     return wrapper
