@@ -128,7 +128,7 @@
 
 ```powershell
 # 1. 克隆项目
-git clone https://github.com/chenmo8848/SMS_BOT.git
+git clone https://github.com/x72dev/SMS_BOT.git
 cd SMS_BOT
 
 # 2. 运行安装向导
@@ -187,7 +187,7 @@ python -m bot
 
 ## 🔐 授权系统
 
-对接 [SMSBOT Auth Server](https://github.com/chenmo8848/SMSBOT-Auth-Server) 服务端。
+对接 [SMSBOT Auth Server](https://github.com/x72dev/SMSBOT-Auth-Server) 服务端。
 
 ### 工作流程
 
