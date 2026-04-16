@@ -31,7 +31,7 @@ class SmsSender:
         # 授权轻量检查（不联网，只查内存 + 过期时间）
         license_mgr = getattr(self, '_license_mgr', None)
         if license_mgr and not license_mgr.light_check():
-            return False, "授权已过期或无效，请发 /activate 重新验证"
+            return False, "授权已过期或无效，请联系管理员获取卡密后发送 /activate 卡密"
 
         phone = normalize_phone(phone)
         if not phone:

@@ -63,6 +63,9 @@ class BotConfig(BaseModel):
     test_interval_min: int = Field(default=30, ge=1)
     test_content: str = "落地测试"
 
+    # ── 授权 ──
+    license_api_url: str = Field(default="", description="SMSBOT Auth Server 授权服务地址")
+
     @field_validator("bot_token")
     @classmethod
     def check_token(cls, v):

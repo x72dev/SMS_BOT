@@ -86,6 +86,7 @@ function Do-Install {
     $deps = @(
         "python-telegram-bot[socks]",
         "httpx",
+        "requests",
         "psutil",
         "openpyxl",
         "pydantic",

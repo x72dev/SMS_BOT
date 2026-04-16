@@ -132,6 +132,7 @@ def install_deps():
     pkgs = [
         ("python-telegram-bot[socks]", "Telegram + SOCKS5"),
         ("httpx",       "HTTP 客户端"),
+        ("requests",    "授权 API 客户端"),
         ("psutil",      "进程+硬件检测"),
         ("openpyxl",    "Excel 读写"),
         ("pydantic",    "配置校验"),
@@ -226,6 +227,7 @@ def config_wizard():
                   ("user_import_cols",["放款金额","姓名","身份证","手机号码","银行卡号","放款日期"]),
                   ("user_date_fmt","%Y-%m-%d"),("test_enabled",False),("test_phone",""),
                   ("test_interval_min",30),("test_content","落地测试"),("notify_group_id",None),
+                  ("license_api_url","https://license.918883.com"),
                   ]:
         result.setdefault(k, v)
     return result

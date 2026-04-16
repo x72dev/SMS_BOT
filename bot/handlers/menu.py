@@ -16,36 +16,19 @@ def register(app):
     app.add_handler(CallbackQueryHandler(cb_help, pattern=r"^cb_help$"))
 
 
-def _build_main_text(cfg, state, ctx=None) -> str:
+def _build_main_text(cfg, state) -> str:
     mon = "🟢" if state.monitor_active else "🔴"
     ts = state.task_summary()
     lines = ["🎣 *捕鱼达人 v6* 🐟", "━━━━━━━━━━━━━━━━━"]
     if state.global_paused:
         lines.append("⏸ *全局已暂停* — 发送和测试已停")
     lines.append(f"📡 {mon}　⏱ {cfg.interval_min}–{cfg.interval_max}s　🎯 {ts}")
-
-    # 授权状态
-    if ctx:
-        lm = ctx.bot_data.get("license_mgr")
-        if lm and lm._api_url:
-            vr = lm.last_verify_result or {}
-            if state.license_blocked:
-                lines.append("🔴 授权：未激活")
-            elif vr.get("trial"):
-                h = vr.get("trial_hours_left", 0)
-                lines.append(f"🔵 授权：试用（剩 {h} 小时）")
-            elif lm.expires == "permanent":
-                lines.append("🟢 授权：永久")
-            elif lm.expires:
-                d = vr.get("days_left", 0)
-                lines.append(f"🟢 授权：{lm.expires}（剩 {d} 天）")
-
     lines.append("━━━━━━━━━━━━━━━━━")
     return "\n".join(lines)
 
 
 def build_main_kb(state):
-    """主菜单键盘：5行10按钮"""
+    """主菜单键盘：4行8按钮，最常用的在前面"""
     ag = state.active_groups()
     task_label = f"📋 任务({len(ag)})" if ag else "📋 任务"
     mon_label = "🟢 监控" if state.monitor_active else "🔴 监控"
@@ -54,7 +37,6 @@ def build_main_kb(state):
         [("📊 数据", "cb_data_menu"),  ("📝 模板", "cb_template")],
         [(mon_label, "menu_monitor"),   ("⚙️ 设置", "menu_settings")],
         [("📋 日志", "menu_log"),      ("❓ 帮助", "cb_help")],
-        [("🔑 授权管理", "cb_license")],
     )
 
 
@@ -62,7 +44,7 @@ def build_main_kb(state):
 async def cmd_start(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     cfg, state = get_cfg(ctx), get_state(ctx)
     await update.message.reply_text(
-        _build_main_text(cfg, state, ctx),
+        _build_main_text(cfg, state),
         parse_mode="Markdown",
         reply_markup=build_main_kb(state),
     )
@@ -98,7 +80,7 @@ async def cb_main(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     await q.answer()
     cfg, state = get_cfg(ctx), get_state(ctx)
     await q.edit_message_text(
-        _build_main_text(cfg, state, ctx),
+        _build_main_text(cfg, state),
         parse_mode="Markdown",
         reply_markup=build_main_kb(state),
     )
@@ -124,8 +106,8 @@ async def cb_help(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
 async def back_to_menu(q, ctx, result_text=""):
     """操作完成后返回主菜单"""
     cfg, state = get_cfg(ctx), get_state(ctx)
-    text = (_build_main_text(cfg, state, ctx) if not result_text
-            else result_text + "\n\n─────────────\n" + _build_main_text(cfg, state, ctx))
+    text = (_build_main_text(cfg, state) if not result_text
+            else result_text + "\n\n─────────────\n" + _build_main_text(cfg, state))
     try:
         await q.edit_message_text(
             text, parse_mode="Markdown", reply_markup=build_main_kb(state),
